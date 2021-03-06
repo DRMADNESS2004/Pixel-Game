@@ -1,0 +1,1105 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Game</title>
+    <style>
+        body{
+            background-color:lightgrey;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        //canvas
+        var canvas=document.createElement("canvas");
+        var c=canvas.getContext("2d");
+        canvas.width=window.innerWidth-50;
+        canvas.height=window.innerHeight-50;
+        canvas.style.border="5px white solid";
+        canvas.style.backgroundColor="black";
+        canvas.style.display="block";
+        canvas.style.margin="auto";
+        document.body.appendChild(canvas);
+
+        //joueur
+        var player={
+            x:window.innerWidth/3,
+            y:0,
+            w:30,
+            h:30,
+            color:"blue",
+            speed:10,
+        }
+        //écran de menu et de fin
+        var menuScreen=new Obstacle(0,0,window.innerWidth,window.innerHeight,"orange",0)
+		var endScreen=new Obstacle(0,0,window.innerWidth,window.innerHeight,"orange",0)
+        //trois boutons menu    
+        var button1=new Bouton(2*window.innerWidth/5.1,2.5*window.innerHeight/6,window.innerWidth/5,window.innerHeight/10,"lightblue","Tutorial","black")
+        var button2=new Bouton(2*window.innerWidth/5.1,3.5*window.innerHeight/6,window.innerWidth/5,window.innerHeight/10,"lightblue","Levels","black")
+		var button3=new Bouton(2*window.innerWidth/5.1,4.5*window.innerHeight/6,window.innerWidth/5,window.innerHeight/10,"lightblue","Play","black")
+        
+        //boutons dans la page levels
+        var lvl1=new Bouton(window.innerWidth/10,window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","1","#99ffe6")
+        var lvl2=new Bouton(3*window.innerWidth/10,window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","2","#99ffe6")
+        var lvl3=new Bouton(5*window.innerWidth/10,window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","3","#99ffe6")
+        var lvl4=new Bouton(7*window.innerWidth/10,window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","4","#99ffe6")
+        var lvl5=new Bouton(window.innerWidth/10,2*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","5","#99ffe6")
+        var lvl6=new Bouton(3*window.innerWidth/10,2*window.innerHeight/3,0,window.innerHeight/10,"#00e639","6","#99ffe6")
+        var lvl7=new Bouton(5*window.innerWidth/10,2*window.innerHeight/3,0,window.innerHeight/10,"#00e639","7","#99ffe6")
+        var lvl8=new Bouton(7*window.innerWidth/10,2*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"#00e639","8","#99ffe6")
+        
+        //texts
+        var infoLvl1=new Bouton(window.innerWidth/10,1.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Normal","#99ffe6")
+        var infoLvl2=new Bouton(3*window.innerWidth/10,1.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Faster","#99ffe6")
+        var infoLvl3=new Bouton(5*window.innerWidth/10,1.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Slower","#99ffe6")
+        var infoLvl4=new Bouton(7*window.innerWidth/10,1.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","One Life","#99ffe6")
+        var infoLvl5=new Bouton(window.innerWidth/10,2.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Timer","#99ffe6")
+        var infoLvl6=new Bouton(3*window.innerWidth/10,2.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Inversed","#99ffe6")
+        var infoLvl7=new Bouton(5*window.innerWidth/10,2.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Right Push","#99ffe6")
+        var infoLvl8=new Bouton(7*window.innerWidth/10,2.5*window.innerHeight/3,window.innerWidth/7,window.innerHeight/10,"black","Left Push","#99ffe6")
+
+        //variable qui choisit un chemin aléatoirement
+        var number=Math.round(Math.random()*2)+1
+        console.log(number)
+
+        //tuto niv1
+        var obst1=new Obstacle(0,0,window.innerWidth,10,"green",0)
+        var obst2=new Obstacle(0,0,10,window.innerHeight,"green",0)
+        var obst3=new Obstacle(window.innerWidth-60,0,10,window.innerHeight,"green",0)
+        var obst4=new Obstacle(0,window.innerHeight-60,window.innerWidth,10,"green",0)
+
+        //tuto niv2
+        var obst5=new Obstacle(window.innerWidth/5,0,window.innerWidth/5,window.innerHeight/3,"#ff6633",0)
+        var obst6=new Obstacle(window.innerWidth/5,window.innerHeight/3,window.innerWidth/5,window.innerHeight/3,"#ff9933",0)
+        var obst7=new Obstacle(window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,window.innerHeight/3,"#ffcc33",0)
+        var obst8=new Obstacle(3*window.innerWidth/5,0,window.innerWidth/5,window.innerHeight/3,"#33ffcc",0)
+        var obst9=new Obstacle(3*window.innerWidth/5,window.innerHeight/3,window.innerWidth/5,window.innerHeight/3,"#33ffff",0)
+        var obst10=new Obstacle(3*window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,window.innerHeight/3,"#33ccff",0)
+
+        //tuto niv3
+        var obst11=new Obstacle(window.innerWidth/10,0,window.innerWidth/7,2*window.innerHeight/3,"white",0)
+        var obst12=new Obstacle(3*window.innerWidth/10,window.innerHeight-obst11.h,window.innerWidth/7,2*window.innerHeight/3,"white",0)
+        var obst13=new Obstacle(5*window.innerWidth/10,0,window.innerWidth/7,2*window.innerHeight/3,"white",0)
+        var obst14=new Obstacle(7*window.innerWidth/10,window.innerHeight-obst11.h,window.innerWidth/7,2*window.innerHeight/3,"white",0)
+        
+        //tuto niv4
+        //tuto walls
+        var obst15=new Obstacle(window.innerWidth/5,0,10,2*window.innerHeight/3,"white",0)
+        var obst16=new Obstacle(2*window.innerWidth/5,0,10,2*window.innerHeight/3,"white",0)
+        var obst17=new Obstacle(3*window.innerWidth/5,0,10,2*window.innerHeight/3,"white",0)
+        var obst18=new Obstacle(4*window.innerWidth/5,0,10,2*window.innerHeight/3,"white",0)
+        //tuto keys
+        var key1=new Obstacle(window.innerWidth/10,5,20,20,"#ff3333",0)
+        var key2=new Obstacle(3*window.innerWidth/10,5,20,20,"ffff33",0)
+        var key3=new Obstacle(7*window.innerWidth/10,5,20,20,"#66ff33",0)
+        var key4=new Obstacle(5*window.innerWidth/10,5,20,20,"#3333ff",0)
+        //tuto doors
+        var obst19=new Obstacle(3*window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,10,"#ff3333",0)
+        var obst20=new Obstacle(2*window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,10,"ffff33",0)
+        var obst21=new Obstacle(window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,10,"#66ff33",0)
+        var obst22=new Obstacle(4*window.innerWidth/5,2*window.innerHeight/3,window.innerWidth/5,10,"#3333ff",0)
+
+        //tuto niv5
+        var obst23=new Obstacle(window.innerWidth/7,window.innerHeight/2,window.innerWidth/15,window.innerHeight/3,"white",3)
+        var obst24=new Obstacle(2*window.innerWidth/7,window.innerHeight/2,window.innerWidth/14,window.innerHeight/20,"white",15)
+        var obst25=new Obstacle(3*window.innerWidth/7,window.innerHeight/2,window.innerWidth/7,window.innerHeight/11,"white",10)
+        var obst26=new Obstacle(4*window.innerWidth/7,window.innerHeight/2,window.innerWidth/10,window.innerHeight/15,"white",5)
+        var obst27=new Obstacle(5*window.innerWidth/7,window.innerHeight/2,window.innerWidth/13,window.innerHeight/9,"white",3)
+        var obst28=new Obstacle(6*window.innerWidth/7,window.innerHeight/2,window.innerWidth/20,window.innerHeight/5,"white",3)
+
+        //tuto niv6
+        var obst29=new Obstacle(window.innerWidth/9,0,window.innerWidth/5,window.innerHeight,"#ff33ff",0)
+        var obst30=new Obstacle(2.5*window.innerWidth/8,0,window.innerWidth/2.8,window.innerHeight/2,"#ff33cc",0)
+        var obst31=new Obstacle(2.5*window.innerWidth/8,window.innerHeight/2,window.innerWidth/2.8,window.innerHeight/2,"#ff3399",0)
+        var obst32=new Obstacle(4*window.innerWidth/6,0,window.innerWidth/5,window.innerHeight,"#ff3366",0)
+
+        //tutp niv7
+        var obst33=new Obstacle(0,0,2*window.innerWidth/3,window.innerHeight,"pink",0)
+
+        //augmenteur de niv dans tuto
+        var next1=new Obstacle(window.innerWidth-90,window.innerHeight/2-50,30,50,"green",0)
+
+        //var des niv du tuto
+        var next=0
+        console.log(next)
+
+        //obstacles du jeu
+		var bar1=new Obstacle(window.innerWidth/5-10,0,10,window.innerHeight-300,"white",0)
+		var bar2=new Obstacle(2*window.innerWidth/5-10,window.innerHeight-bar1.h,10,window.innerHeight-300,"white",0)
+		var bar3=new Obstacle(3*window.innerWidth/5-10,0,10,window.innerHeight-300,"white",0)
+		var bar4=new Obstacle(4*window.innerWidth/5-10,window.innerHeight-bar1.h,10,window.innerHeight-300,"white",0)
+        var obstacle1=new Obstacle(0,window.innerHeight/7,window.innerWidth/8,window.innerHeight/11,"white",0)
+        var obstacle2=new Obstacle(window.innerWidth/14,window.innerHeight/3.2,window.innerWidth/8,window.innerHeight/11,"white",0)
+        var obstacle3=new Obstacle(0,3.4*window.innerHeight/7,window.innerWidth/8,window.innerHeight/11,"white",0)
+        var color1=new Obstacle(window.innerWidth/5,window.innerHeight/2-200,window.innerWidth/17,window.innerHeight/2,"red",0)
+        var color2=new Obstacle(window.innerWidth/3.8,window.innerHeight/2-200,window.innerWidth/17,window.innerHeight/2,"purple",0)
+        var color3=new Obstacle(window.innerWidth/3.05,window.innerHeight/2-200,window.innerWidth/17,window.innerHeight/2,"brown",0)
+		var movingRectangle1=new Obstacle(window.innerWidth/2,window.innerHeight/2,window.innerWidth/10,window.innerHeight/10,"red",10)
+		var movingRectangle2=new Obstacle(window.innerWidth/2.5,window.innerHeight/2,window.innerWidth/10,window.innerHeight/10,"green",-10)
+		var key=new Obstacle(window.innerWidth/10,5,20,20,"orange",0)
+		var door=new Obstacle(window.innerWidth/1.67,window.innerHeight/2,window.innerWidth/5,20,"orange",0)
+        var up=new Obstacle(3*window.innerWidth/5,0,2*window.innerWidth/5,window.innerHeight/4.5,"yellow",0)
+        var left=new Obstacle(3*window.innerWidth/5,window.innerHeight/4.5,window.innerWidth/5.2,window.innerHeight/4,"grey",0)
+        var right=new Obstacle(4*window.innerWidth/5,window.innerHeight/4.5,window.innerWidth/5.2,window.innerHeight/4,"pink",0)
+        var lava1=new Obstacle(3*window.innerWidth/5,0,2*window.innerWidth/5,5,"red",0)
+        var lava2=new Obstacle(3*window.innerWidth/5,0,5,window.innerHeight/2,"red",0)
+        var lava3=new Obstacle(4*window.innerWidth/5-10,window.innerHeight/10,10,2*window.innerHeight/4,"red",0)
+        var lava4=new Obstacle(window.innerWidth-55,0,5,window.innerHeight/2,"red",0)
+		//zone de passage au prochain niveau
+        var finish=new Obstacle(4*window.innerWidth/5,window.innerHeight-window.innerHeight/5,window.innerWidth/5.2,window.innerHeight/5,"lightgreen",0)
+        
+        //var pour lvls du jeu
+        var lvl=0
+        console.log(lvl)
+        //boîte du temps lvl5
+        var timer={
+            x:0,
+            y:window.innerHeight-150,
+            w:100,
+            h:70,
+            }
+        
+        //var temps lvl5
+        var time=0
+
+        //seulement lvl8 pour les bugs
+        var clé=new Obstacle(7.5*window.innerWidth/10,3*window.innerHeight/4,20,20,"#1affc6",0)
+        var door2=new Obstacle(window.innerWidth/5-10,window.innerHeight-300,10,300,"#1affc6",0)
+
+        //bouton pour retourner au menu    
+        var button4=new Bouton(2*window.innerWidth/5.1,2*window.innerHeight/3,window.innerWidth/5,window.innerHeight/10,"lightblue","Back to Menu","black")
+		
+        //var du jeu
+        var menu=true
+        var tutorial=false
+        var levels=false
+        var gameOver=false
+        
+        //en rapport avec clavier    
+        var keyDown={}
+		var direction
+
+        //sons
+        var button=new Audio()
+        button.src="click.wav"
+        var win=new Audio()
+        win.src="win.mp3"
+        var win2=new Audio()
+        win2.src="win2.wav"
+        var lose=new Audio()
+        lose.src="lose.flac"
+        var music=new Audio()
+        music.src="music.mp3"
+
+        //images
+        var lava=new Image()
+        lava.src="lava.jpg"
+        var spikes=new Image()
+        spikes.src="spike.jpg"
+        var rocks=new Image()
+        rocks.src="rocks.jpg"
+        var bas=new Image()
+        bas.src="down.png"
+        var haut=new Image()
+        haut.src="up.png"
+        var droite=new Image()
+        droite.src="right.png"
+        var gauche=new Image()
+        gauche.src="left.png"
+
+        //page de menu
+		function showMenu(){
+            music.play()
+            time=0
+            menuScreen.draw()
+			c.font="50px Arial"
+			c.fillStyle="black"
+			c.fillText("Menu",window.innerWidth/2-20,window.innerHeight/2-100)
+			c.textAlign="center"
+			}
+
+        //func constructeur pour créer des boutons
+        function Bouton(x,y,w,h,color,text,fillStyle){
+            this.x=x
+            this.y=y
+            this.w=w
+            this.h=h
+            this.color=color
+            this.text=text
+            this.fillStyle=fillStyle
+            this.draw=function(){
+                c.fillStyle=this.color
+                c.fillRect(this.x,this.y,this.w,this.h)
+                c.font="25px Arial"
+                c.fillStyle=this.fillStyle
+                c.fillText(""+this.text,this.x+this.w/2,this.y+this.h/2)
+                
+            }
+        }
+
+        //func avec paramètres pour dessiner les images par-dessus les obstacles
+        function images(a,b){
+            c.drawImage(a,b.x,b.y,b.w,b.h)
+        }
+
+        //dessiner encadré pour montrer le temps
+        function drawTimer(){
+            c.fillStyle="#00ffbf"
+            c.fillRect(timer.x,timer.y,timer.w,timer.h)
+            c.font="25px Arial"
+            c.fillStyle="white"
+            c.fillText("Timer: " +time,50,timer.y+45)
+
+        }
+
+        //trois boutons page de menu
+        function drawBoutons(){
+            button1.draw()
+            button2.draw()
+            button3.draw()
+
+        }
+
+        //évènements en cliquant les boutons
+        document.addEventListener("click",press)
+        function press(e){
+            //boutons de menu
+            if(e.offsetX>button1.x&&e.offsetX<button1.x+button1.w&&e.offsetY<button1.y+button1.h&&e.offsetY>button1.y){
+                button.play()
+                menu=false
+                tutorial=true
+                levels=false
+                player.x=50
+                player.y=window.innerHeight/2
+            }
+            if(e.offsetX>button2.x&&e.offsetX<button2.x+button2.w&&e.offsetY<button2.y+button2.h&&e.offsetY>button2.y){
+                button.play()
+                button4.w=0
+                menu=false
+                tutorial=false
+                levels=true
+                lvl7.w=window.innerWidth/7
+                lvl6.w=window.innerWidth/7
+            }
+            if(e.offsetX>button3.x&&e.offsetX<button3.x+button3.w&&e.offsetY<button3.y+button3.h&&e.offsetY>button3.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=1
+            }
+
+            //boutons pour lvls 1-8
+            if(e.offsetX>lvl1.x&&e.offsetX<lvl1.x+lvl1.w&&e.offsetY<lvl1.y+lvl1.h&&e.offsetY>lvl1.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=1
+            }
+            if(e.offsetX>lvl2.x&&e.offsetX<lvl2.x+lvl2.w&&e.offsetY<lvl2.y+lvl2.h&&e.offsetY>lvl2.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=2
+            }
+            if(e.offsetX>lvl3.x&&e.offsetX<lvl3.x+lvl3.w&&e.offsetY<lvl3.y+lvl3.h&&e.offsetY>lvl3.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=3
+            }
+            if(e.offsetX>lvl4.x&&e.offsetX<lvl4.x+lvl4.w&&e.offsetY<lvl4.y+lvl4.h&&e.offsetY>lvl4.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=4
+            }
+            if(e.offsetX>lvl5.x&&e.offsetX<lvl5.x+lvl5.w&&e.offsetY<lvl5.y+lvl5.h&&e.offsetY>lvl5.y){
+                button.play()
+                time=0
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=5
+            }
+            if(e.offsetX>lvl6.x&&e.offsetX<lvl6.x+lvl6.w&&e.offsetY<lvl6.y+lvl6.h&&e.offsetY>lvl6.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=6
+            }
+            if(e.offsetX>lvl7.x&&e.offsetX<lvl7.x+lvl7.w&&e.offsetY<lvl7.y+lvl7.h&&e.offsetY>lvl7.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                moveLeft=true
+                lvl=7
+                door2.draw()
+                clé.draw()
+                clé.w=20
+                door2.h=300 
+                door2.w=10
+                console.log(moveLeft)
+            }
+            if(e.offsetX>lvl8.x&&e.offsetX<lvl8.x+lvl8.w&&e.offsetY<lvl8.y+lvl8.h&&e.offsetY>lvl8.y){
+                button.play()
+                menu=false
+                tutorial=false
+                levels=false
+                lvl=8
+            }
+
+            //bouton de retour au menu
+            if(e.offsetX>button4.x&&e.offsetX<button4.x+button4.w&&e.offsetY<button4.y+button4.h&&e.offsetY>button4.y){
+                menu=true
+                tutorial=true
+                levels=false
+                gameOver=false
+                time=0
+                door.w=window.innerWidth/5
+                key.w=20
+                player.x=window.innerWidth/3
+                player.y=0
+                number=Math.round(Math.random()*2)+1
+                console.log(number)
+            }
+        }
+
+        //niveaux du tutoriel
+        function showTutorial(){
+            next1.draw()
+            if (collision(player,next1)&&next<7){
+                win.play()
+                next++
+                player.x=50
+                player.y=window.innerHeight/2
+                console.log(next)
+            }
+            
+            if(next==0){
+                obst1.draw()
+                images(lava,obst1)
+                obst2.draw()
+                images(lava,obst2)
+                obst3.draw()
+                images(lava,obst3)
+                obst4.draw()
+                images(lava,obst4)
+            }
+
+            if(next==1){
+                obst5.draw()
+                obst6.draw()
+                obst7.draw()
+                obst8.draw()
+                obst9.draw()
+                obst10.draw()
+                tutoRng(player,obst5,obst6,obst7)
+                tutoRng(player,obst9,obst10,obst8)
+            }
+
+            if(next==2){
+                obst11.draw()
+                images(spikes,obst11)
+                obst12.draw()
+                images(spikes,obst12)
+                obst13.draw()
+                images(spikes,obst13)
+                obst14.draw()
+                images(spikes,obst14)
+            }
+
+            if(next==3){
+                obst15.draw()
+                obst16.draw()
+                obst17.draw()
+                obst18.draw()
+                obst19.draw()
+                obst20.draw()
+                obst21.draw()
+                obst22.draw()
+                key1.draw()
+                key2.draw()
+                key3.draw()
+                key4.draw()
+                tutoCheckHitWall()
+            }
+
+            if(next==4){
+                obst23.draw()
+                images(rocks,obst23)
+                obst24.draw()
+                images(rocks,obst24)
+                obst25.draw()
+                images(rocks,obst25)
+                obst26.draw()
+                images(rocks,obst26)
+                obst27.draw()
+                images(rocks,obst27)
+                obst28.draw()
+                images(rocks,obst28)
+            }
+
+            if(next==5){
+                obst29.draw()
+                images(gauche,obst29)
+                obst30.draw()
+                images(haut,obst30)
+                obst31.draw()
+                images(bas,obst31)
+                obst32.draw()
+                images(droite,obst32)
+            }
+
+            if(next==6){
+                obst33.draw()
+            }
+
+            if(next==7){
+                win2.play()
+                menu=true
+            }
+        }
+
+        //collisions dans le tutoriel
+        function tutoCollisions(){
+            if(next==0){
+            if(collision(player,obst1)||
+            collision(player,obst2)||
+            collision(player,obst3)||
+            collision(player,obst4)){
+                player.x=50
+                player.y=window.innerHeight/2
+            }
+            }
+
+            if(next==2){
+            if(collision(player,obst11)||
+            collision(player,obst12)||
+            collision(player,obst13)||
+            collision(player,obst14)){
+                player.x=50
+                player.y=window.innerHeight/2
+            }
+            }
+
+            if(next==3){
+            if(collision(player,obst22)&&key4.w>0){
+                player.x=50
+                player.y=window.innerHeight/2
+            }
+            }
+
+            if(next==4){
+            if(collision(player,obst23)||
+            collision(player,obst24)||
+            collision(player,obst25)||
+            collision(player,obst26)||
+            collision(player,obst27)||
+            collision(player,obst28)){
+                player.x=50
+                player.y=window.innerHeight/2
+            }
+            }
+
+            if(next==5){
+                if(collision(player,obst29)){
+                    player.x-=3
+                }
+                if(collision(player,obst30)&&player.y>0){
+                    player.y-=3
+                }
+                if(collision(player,obst31)&&player.y+player.h<canvas.height){
+                    player.y+=3
+                }
+                if(collision(player,obst32)){
+                    player.x+=3
+                }
+            }
+
+            if(next==6){
+            if(collision(player,obst33)){
+                if(38 in keyDown&&player.y<canvas.height-player.h){
+				    direction="haut"
+                    player.y+=2*player.speed
+                }
+                if(40 in keyDown&&player.y>0){
+				    direction="bas"
+                    player.y-=2*player.speed
+                }
+                if(37 in keyDown&&player.x<canvas.width-player.w){
+				    direction="gauche"
+                    player.x+=2*player.speed
+                }
+                if(39 in keyDown&&player.x>0){
+				    direction="droite"
+                    player.x-=2*player.speed
+                }
+            }
+            }
+            
+        }
+
+        //fonction qui choisit aléatoirement un passage lorsque next==1
+        function tutoRng(a,b,c,d){
+            if(number==1){
+                if(collision(a,c)||collision(a,d)){
+                a.x=50
+                a.y=window.innerHeight/2
+                }
+            }
+            if(number==2){
+                if(collision(a,b)||collision(a,d)){
+                a.x=50
+                a.y=window.innerHeight/2
+                }
+            }
+            if(number==3){
+                if(collision(a,c)||collision(a,b)){
+                a.x=50
+                a.y=window.innerHeight/2
+                }
+            }
+
+        }
+
+        //tuto pour le principe de clés/portes lorsque next==3
+        function tutoCheckHitWall(){
+			hitWall(player,obst15)
+			hitWall(player,obst16)
+			hitWall(player,obst17)
+			hitWall(player,obst18)
+            if(collision(player,key1)){
+                obst19.w=0
+                obst19.h=0
+                key1.w=0
+                key1.h=0
+            }
+            else{
+                hitWall(player,obst19)
+            }
+            if(collision(player,key2)){
+                obst20.w=0
+                obst20.h=0
+                key2.w=0
+                key2.h=0
+            }
+            else{
+                hitWall(player,obst20)
+            }
+            if(collision(player,key3)){
+                obst21.w=0
+                obst21.h=0
+                key3.w=0
+                key3.h=0
+            }
+            else{
+                hitWall(player,obst21)
+            }
+            if(collision(player,key4)){
+                obst22.w=0
+                obst22.h=0
+                key4.w=0
+                key4.h=0
+            }
+            else{
+                collision(player,obst22)
+            }
+			
+			}
+
+        //page de lvls
+        function showLevels(){
+            c.font="50px Arial"
+			c.fillStyle="lightgreen"
+			c.fillText("Levels",window.innerWidth/2-20,100)
+			c.textAlign="center"
+            lvl1.draw()
+            lvl2.draw()
+            lvl3.draw()
+            lvl4.draw()
+            lvl5.draw()
+            lvl6.draw()
+            lvl7.draw()
+            lvl8.draw()
+            infoLvl1.draw()
+            infoLvl2.draw()
+            infoLvl3.draw()
+            infoLvl4.draw()
+            infoLvl5.draw()
+            infoLvl6.draw()
+            infoLvl7.draw()
+            infoLvl8.draw()
+
+        }
+
+        //8 niveaux
+        function niveaux(){
+            //normal
+            if(lvl==1){
+                door2.h=0
+                clé.w=0
+                time=0
+                player.speed=10
+            }
+
+            //plus vite
+            if(lvl==2){
+                door2.h=0
+                clé.w=0
+                time=0
+                player.speed=20
+            }
+
+            //plus lent
+            if(lvl==3){
+                door2.h=0
+                clé.w=0
+                time=0
+                player.speed=5
+            }
+
+            //une vie
+            if(lvl==4){
+                door2.h=0
+                clé.w=0
+                time=0
+            player.speed=10 
+                if(collision(player,obstacle1)||
+			collision(player,obstacle1)||
+			collision(player,obstacle2)||
+			collision(player,obstacle3)||
+			collision(player,movingRectangle1)||
+			collision(player,movingRectangle2)||
+            collision(player,lava1)||
+            collision(player,lava2)||
+            collision(player,lava3)||
+            collision(player,lava4)){
+				gameOver=true
+				}
+                if(number==1){
+                if(collision(player,color2)||collision(player,color3)){
+                    gameOver=true
+                }
+            }
+                if(number==2){
+                if(collision(player,color1)||collision(player,color3)){
+                    gameOver=true
+                }
+            }
+                if(number==3){
+                if(collision(player,color2)||collision(player,color1)){
+                    gameOver=true
+                }
+            }
+            }
+
+            //timer
+            if(lvl==5){
+                door2.h=0
+                clé.w=0
+                drawTimer()
+                if(time==20){
+                    gameOver=true
+                }
+            }
+
+            //controles inversés
+            if(lvl==6){
+                door2.h=0
+                clé.w=0
+                if(38 in keyDown&&player.y<canvas.height-player.h){
+				    direction="haut"
+                    player.y+=2*player.speed
+                }
+                if(40 in keyDown&&player.y>0){
+				    direction="bas"
+                    player.y-=2*player.speed
+                }
+                if(37 in keyDown&&player.x<canvas.width-player.w){
+				    direction="gauche"
+                    player.x+=2*player.speed
+                }
+                if(39 in keyDown&&player.x>0){
+				    direction="droite"
+                    player.x-=2*player.speed
+                }
+                reverseHitWall(player,bar1)
+                reverseHitWall(player,bar2)
+                reverseHitWall(player,bar3)
+                reverseHitWall(player,bar4)
+            }
+
+            //vers la gauche
+            if(lvl==7){
+                door2.h=0
+                clé.w=0
+                if(collision(player,bar1)
+                ||collision(player,bar2)
+                ||collision(player,bar3)
+                ||collision(player,bar4)
+                ||player.x+player.w>canvas.width){
+                    player.x-=3
+                    hitWall(player,bar1)
+                    hitWall(player,bar2)
+                    hitWall(player,bar3)
+                    hitWall(player,bar4)
+                }
+                else {
+                    player.x+=3
+                    }
+                if(player.x+player.w>bar4.x+bar4.w&&door.w!==0){
+                    player.x=window.innerWidth/3
+                    player.y=0
+                    lvl=7
+                } 
+                if(collision(player,finish)&&lvl==7){
+                    door2.h=300
+                    clé.w=20
+                }
+
+            }
+            
+            //vers la droite
+            if(lvl==8){
+                clé.draw()
+                door2.draw()
+                console.log(clé.w)
+                if(collision(player,bar1)
+                ||collision(player,bar2)
+                ||collision(player,bar3)
+                ||collision(player,bar4)
+                ||player.x<0){
+                    player.x+=3
+                    hitWall(player,bar1)
+                    hitWall(player,bar2)
+                    hitWall(player,bar3)
+                    hitWall(player,bar4)
+                }
+                else {
+                    player.x-=3
+                    }
+                if(player.x<bar1.x+bar1.w&&door2.h!==0){
+                    player.x=window.innerWidth/3
+                    player.y=0
+                }
+
+            }
+        }   
+        
+        //pour lvl5
+        function myTimer(){
+            time++
+            
+        }
+
+        //pour lvl6
+        function reverseHitWall(a,b){
+			if(collision(a,b)&&direction=="gauche"){
+				a.x=b.x-a.w
+				}
+			if(collision(a,b)&&direction=="droite"){
+				a.x=b.x+b.w
+				}	
+			if(collision(a,b)&&direction=="haut"){
+				a.y=b.y-a.h
+				}	
+			if(collision(a,b)&&direction=="gauche"){
+				a.y=b.y+b.h
+				}	
+			}
+        
+		//les trois obstacles qui varient la position
+        function move(){
+            if(collision(player,up)&&player.y>0){
+                player.y-=1
+            }
+            if(collision(player,left)){
+                player.x-=1
+            }
+            if(collision(player,right)&&player.x+player.w<canvas.width){
+                player.x+=1
+            }
+
+        }
+
+        //frappant un mur
+		function hitWall(a,b){
+			if(collision(a,b)&&direction=="gauche"){
+				a.x=b.x+b.w
+				}
+			if(collision(a,b)&&direction=="droite"){
+				a.x=b.x-a.w
+				}	
+			if(collision(a,b)&&direction=="haut"){
+				a.y=b.y+b.h
+				}	
+			if(collision(a,b)&&direction=="gauche"){
+				a.y=b.y-a.h
+				}	
+			}
+			
+        //appelle hitWall 
+		function gameCheckHitWall(){
+			hitWall(player,bar1)
+			hitWall(player,bar2)
+			hitWall(player,bar3)
+			hitWall(player,bar4)
+            if(collision(player,key)){
+                door.w=0
+                key.w=0
+            }
+            else{
+                hitWall(player,door)
+            }
+            if(collision(player,clé)){
+                door2.h=0
+                clé.w=0
+            }
+            else{
+                hitWall(player,door2)
+            }
+			
+			}	
+			
+        //func constructeur pour la création d'obstacles
+        function Obstacle(x,y,w,h,color,speed){
+            this.x=x
+            this.y=y
+            this.w=w
+            this.h=h
+            this.color=color
+            this.speed=speed
+            this.draw=function(){
+                c.fillStyle=this.color
+                c.fillRect(this.x,this.y,this.w,this.h)
+				if(this.y<0||this.y+this.h>canvas.height){
+					this.speed=-this.speed
+					}
+				this.y+=this.speed	
+            }
+        }
+
+        //dessine les obstacles
+        function draw(){
+			door.draw()
+            obstacle1.draw()
+            images(spikes,obstacle1)
+            obstacle2.draw()
+            images(spikes,obstacle2)
+            obstacle3.draw()
+            images(spikes,obstacle3)
+            color1.draw()
+            color2.draw()
+            color3.draw()
+			movingRectangle1.draw()
+            images(rocks,movingRectangle1)
+			movingRectangle2.draw()
+            images(rocks,movingRectangle2)
+			key.draw()
+            up.draw()
+            images(haut,up)
+            left.draw()
+            images(gauche,left)
+            right.draw()
+            images(droite,right)
+            lava1.draw()
+            images(lava,lava1)
+            lava2.draw()
+            images(lava,lava2)
+            lava3.draw()
+            images(lava,lava3)
+            lava4.draw()
+            images(lava,lava4)
+			bar1.draw()
+			bar2.draw()
+			bar3.draw()
+			bar4.draw()
+			finish.draw()
+        }
+
+        //dessine joueur
+        function drawPlayer(){
+            c.fillStyle=player.color
+            c.fillRect(player.x,player.y,player.w,player.h)
+        }
+
+        //clavier
+        document.addEventListener("keydown",function(e){
+            keyDown[e.keyCode]=true
+            console.log(keyDown)
+        })
+        document.addEventListener("keyup", function(e){
+            delete keyDown[e.keyCode]
+            console.log(keyDown)
+        })
+        
+        //pour décider aléatoirement un chemin
+        function gameRng(){
+            if(number==1){
+                if(collision(player,color2)||collision(player,color3)){
+                player.x=window.innerWidth/3
+                player.y=0
+                }
+            }
+            if(number==2){
+                if(collision(player,color1)||collision(player,color3)){
+                player.x=window.innerWidth/3
+                player.y=0
+                }
+            }
+            if(number==3){
+                if(collision(player,color2)||collision(player,color1)){
+                player.x=window.innerWidth/3
+                player.y=0
+                }
+            }
+        }
+
+        //clavier
+        function clavier(){
+            if(38 in keyDown&&player.y>0){
+				direction="haut"
+                player.y-=player.speed
+            }
+            if(40 in keyDown&&player.y<canvas.height-player.h){
+				direction="bas"
+                player.y+=player.speed
+            }
+            if(37 in keyDown&&player.x>0){
+				direction="gauche"
+                player.x-=player.speed
+            }
+            if(39 in keyDown&&player.x<canvas.width-player.w){
+				direction="droite"
+                player.x+=player.speed
+            }
+        }
+
+        //collision dans le jeu
+        function gameCollisions(){
+			if(collision(player,obstacle1)||
+			collision(player,obstacle1)||
+			collision(player,obstacle2)||
+			collision(player,obstacle3)||
+			collision(player,movingRectangle1)||
+			collision(player,movingRectangle2)||
+            collision(player,lava1)||
+            collision(player,lava2)||
+            collision(player,lava3)||
+            collision(player,lava4)){
+				player.x=window.innerWidth/3
+				player.y=0
+				}
+			if(collision(player,finish)||lvl>8){
+				win.play()
+                lvl++
+                player.x=window.innerWidth/3
+                player.y=0
+                door.w=window.innerWidth/5
+                key.w=20
+                
+                if(lvl>8){
+                    winEnd()
+                    player.x=window.innerWidth/3
+                    player.y=0
+                }
+            }    
+		}
+
+        //collision
+        function collision(a,b){
+            if(a.x+a.w>b.x&&a.x<b.x+b.w&&a.y<b.y+b.h&&a.y+a.h>b.y){
+               return(true)
+               console.log(1)
+            }
+        }
+		
+        //page de victoire
+		function winEnd(){
+            win2.play()                                                                                                                                                                       
+            button4.w=window.innerWidth/5
+			c.fillStyle=endScreen.color
+			c.fillRect(endScreen.x,endScreen.y,endScreen.w,endScreen.h)	
+			c.font="50px Arial"
+			c.fillStyle="black"
+			c.fillText("YOU HAVE WON!!!",window.innerWidth/2,window.innerHeight/2)
+			c.textAlign="center"
+            button4.draw()
+		}
+
+        //page de défaite
+        function loseEnd(){
+            lose.play()
+            button4.w=window.innerWidth/5
+			c.fillStyle=endScreen.color
+			c.fillRect(endScreen.x,endScreen.y,endScreen.w,endScreen.h)	
+			c.font="50px Arial"
+			c.fillStyle="black"
+			c.fillText("RESTART NOOB!!!",window.innerWidth/2,window.innerHeight/2)             
+			c.textAlign="center"          
+            button4.draw()        
+		}            
+
+        //pour pas que le temps soit dans un loop (lvl5)
+        setInterval(myTimer,1000)
+            if(lvl==5){
+                time=0
+            }
+        console.log(time)
+       
+        //func game
+        function game(){
+			if(menu==true){
+				showMenu()
+                drawBoutons()
+				}
+			else{
+        c.clearRect(0,0,canvas.width,canvas.height)    
+        if(tutorial==true){
+                showTutorial()
+                drawPlayer()
+                clavier()
+                tutoCollisions()
+                }
+        else if(levels==true){
+                showLevels()
+        }    
+        else if(gameOver==false){
+            draw()
+            drawPlayer()
+            move()
+		    gameCollisions()
+            gameRng()
+            clavier()
+		    gameCheckHitWall()
+            niveaux()
+        }
+        else if(gameOver==true){
+            loseEnd()
+        }
+        
+        /*drawBars(bar1)
+        drawBars(bar2)
+        drawBars(bar3)
+        drawBars(bar4)*/
+        
+        /*drawKeys(key1)
+        drawKeys(key2)
+        drawKeys(key3)
+        drawKeys(key4)
+        drawKeys(key5)*/
+        }
+        requestAnimationFrame(game)
+        }
+        game()
+    </script>
+</body>
+</html>
